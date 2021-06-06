@@ -1,60 +1,98 @@
-const playerOne = {
+const $arenas = document.querySelector('.arenas');
+const $randomButton = document.querySelector('.button');
+
+const player1 = {
+    player: 1,
     name: 'Kitana',
     hp: '100',
     img: 'http://reactmarathon-api.herokuapp.com/assets/kitana.gif',
-    weapon: ['Спички','Вонючий носок', 'Кость индейца'],
+    weapon: ['Спички', 'Вонючий носок', 'Кость индейца'],
     attack: function () {
         console.log(this.name + 'Fight...')
     }
 };
 
-const playerTwo = {
+const player2 = {
+    player: 2,
     name: 'Sonya',
     hp: '100',
     img: 'http://reactmarathon-api.herokuapp.com/assets/sonya.gif',
-    weapon: ['Газовая горелка','Засохшая какаха', 'Щепотка соли'],
+    weapon: ['Газовая горелка', 'Засохшая какаха', 'Щепотка соли'],
     attack: function () {
         console.log(this.name + 'Fight...')
     }
 };
 
-function createPlayer(mainClass, playerObject) {
 
-    const $player = document.createElement('div');
-    $player.classList.add(mainClass);
+function createElement(tag, className) {
+    const $tag = document.createElement(tag);
+    if (className) {
+        $tag.classList.add(className);
+    }
 
-    const $div_progressbar = document.createElement('div');
-    $div_progressbar.classList.add('progressbar')
-    $player.appendChild($div_progressbar);
-
-
-    const $div_life = document.createElement('div');
-    $div_life.classList.add('life');
-    $div_life.style.width = '100%';
-
-    const $div_name = document.createElement('div');
-    $div_name.classList.add('name');
-
-    $div_progressbar.appendChild($div_life);
-    $div_progressbar.appendChild($div_name);
-    $div_name.innerText = playerObject.name;
-
-    const $div_character = document.createElement('div');
-    $div_character.classList.add('character');
-
-    $player.appendChild($div_character);
-
-    const $img = document.createElement('img');
-    $img.src = playerObject.img;
-
-    $div_character.appendChild($img);
-
-    const $arenas = document.querySelector('.arenas');
-    $arenas.appendChild($player);
-
+    return $tag
 }
 
-createPlayer('player1', playerOne);
-createPlayer('player2', playerTwo);
+function createPlayer(playerObject) {
+
+    const $player = createElement('div', 'player' + playerObject.player);
+    const $progressbar = createElement('div', 'progressbar');
+    const $character = createElement('div', 'character');
+    const $life = createElement('div', 'life');
+    const $name = createElement('div', 'name');
+    const $img = createElement('img');
+
+
+    $life.style.width = playerObject.hp + '%';
+    $name.innerText = playerObject.name;
+    $img.src = playerObject.img;
+
+    $progressbar.appendChild($life);
+    $progressbar.appendChild($name);
+
+    $character.appendChild($img);
+
+    $player.appendChild($progressbar);
+    $player.appendChild($character);
+
+    return $player;
+}
+
+
+function changeHP(player) {
+    const $playerLife = document.querySelector('.player' + player.player + ' .life');
+
+    player.hp -= Math.floor(Math.random()*20);
+    console.log(player.hp);
+    if (player.hp <= 0) {
+        player.hp = 0
+    } else {
+        $playerLife.style.width = player.hp + '%';
+    }
+
+
+
+    if (player.hp < 0) {
+        $arenas.appendChild(playerLose(player.name));
+    }
+}
+
+function playerLose(name) {
+    const $loseTitle = createElement('div', 'loseTitle');
+    $loseTitle.innerText = name + ' lose';
+    $randomButton.disabled = true;
+    return $loseTitle
+}
+
+$randomButton.addEventListener('click', function () {
+    console.log('####: Click Random Button');
+    changeHP(player1);
+    changeHP(player2);
+})
+
+$arenas.appendChild(createPlayer(player1));
+$arenas.appendChild(createPlayer(player2));
+
+
 
 
